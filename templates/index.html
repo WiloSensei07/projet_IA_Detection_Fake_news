@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Prediction</title>
+</head>
+<body>
+    <h1>Transfer Prediction</h1>
+    <form id="inputForm">
+        <label for="league">League:</label>
+        <input type="text" id="league" name="league"><br>
+        <label for="season">Season:</label>
+        <input type="number" id="season" name="season"><br>
+        <label for="team_name">Team Name:</label>
+        <input type="text" id="team_name" name="team_name"><br>
+        <label for="team_country">Team Country:</label>
+        <input type="text" id="team_country" name="team_country"><br>
+        <label for="player_name">Player Name:</label>
+        <input type="text" id="player_name" name="player_name"><br>
+        <label for="player_age">Player Age:</label>
+        <input type="number" id="player_age" name="player_age"><br>
+        <label for="player_nation">Player Nation:</label>
+        <input type="text" id="player_nation" name="player_nation"><br>
+        <label for="counter_team_name">Counter Team Name:</label>
+        <input type="text" id="counter_team_name" name="counter_team_name"><br>
+        <label for="counter_team_country">Counter Team Country:</label>
+        <input type="text" id="counter_team_country" name="counter_team_country"><br>
+        <label for="transfer_fee_amnt">Transfer Fee Amount:</label>
+        <input type="number" id="transfer_fee_amnt" name="transfer_fee_amnt"><br>
+        <label for="market_val_amnt">Market Value Amount:</label>
+        <input type="number" id="market_val_amnt" name="market_val_amnt"><br>
+        <label for="is_free">Is Free:</label>
+        <input type="checkbox" id="is_free" name="is_free"><br>
+        <label for="is_retired">Is Retired:</label>
+        <input type="checkbox" id="is_retired" name="is_retired"><br>
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        function submitForm() {
+            const formData = new FormData(document.getElementById('inputForm'));
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value === "on" ? true : value; // Handle checkboxes
+            });
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = `
+                    <p>Truth Percentage: ${data.truth_percentage}%</p>
+                    <p>Likely False Fields: ${data.likely_false_fields.join(', ')}</p>
+                `;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
